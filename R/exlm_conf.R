@@ -1,3 +1,7 @@
+#' Confidence Union for a linear model
+#'
+#' @export
+
 interval_gmm<-function(X,y,mom,I_min,I_max=I_min,grid_points=10001,intercept=TRUE){
   positions<-as.numeric(gsub("\\D","",mom))
   if(intercept==T){positions<-positions+1}
