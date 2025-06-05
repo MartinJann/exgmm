@@ -1,3 +1,5 @@
+#' @importFrom stats lm pchisq pf qt sd var
+#calculate vector of external moment functions
 calc_h<-function(X,y,E,mom,positions){
   h<-c()
   for (i_h in 1:length(mom)) {
@@ -16,6 +18,7 @@ calc_h<-function(X,y,E,mom,positions){
   return(h)
 }
 
+#calculate covariance matrix of external and model moment functions
 calc_Omega_R_X<-function(X,y,sigma,mom,beta_ols,positions){
   Omega_R<-c()
   for (i_o in 1:length(mom)) {
@@ -34,7 +37,8 @@ calc_Omega_R_X<-function(X,y,sigma,mom,beta_ols,positions){
   return(sigma^2*Omega_R/nrow(X))
 }
 
-calc_Omega_h<-function(X,y,E,mom,sigma,beta_ols_h,positions){
+#calculate variance matrix for external moment function
+calc_Omega_h<-function(X,y,E,mom,sigma,beta_ols_h,positions,var.e){
   h_d<-calc_h(X,y,E,mom,positions)
   if(length(mom)==1){
     Omega_h<-switch(mom,
@@ -48,5 +52,5 @@ calc_Omega_h<-function(X,y,E,mom,sigma,beta_ols_h,positions){
                     BXY = (mean(((X%*%beta_ols_h-mean(X%*%beta_ols_h))*(X[,positions]-mean(X[,positions]))-E*var(X[,positions]))^2)+sigma^2*var(X[,positions]))/var(X[,positions])/var(X[,positions])
     )
   }else{Omega_h<-t(h_d)%*%h_d/nrow(X)}
-  return(Omega_h)
+  return(Omega_h+var.e)
 }

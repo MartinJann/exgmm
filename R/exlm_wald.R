@@ -1,5 +1,6 @@
-#' Externally informed linear model
-#' @description Computes intervals for estimates and their variances as well as confidence unions.
+#' Test for general linear hypotheses in the externally informed linear model
+#' @description Tests the general Null hypothesis: R %*% beta_0 = r for a full rank matrix R and vector r.
+#'
 #' @export
 #' @importFrom stats lm pchisq pf qt sd var
 #' @param X Numeric matrix containing independent variables in colums.
@@ -13,25 +14,30 @@
 #' @param var.e Numeric matrix equal to external variance.
 #' @param grid_points Number of Grid points.
 #' @param intercept Logical, indicates wheter intercept is used in model or not.
-#' @returns Numeric matrix with lower and upper bounds of estimates, variances and confidence unions.
+#' @param R Numeric matrix defining contrasts R for the nullhypothesis Rb=r.
+#' @param r Numeric vector r for the nullhypothesis Rb=r.
+#' @returns list containing a string describing the test result and a p-value.
 #' @examples
-#' x<-rnorm(100);y<-rnorm(100)
-#' exlm(x,y,c("EY"),c(-0.2),c(0.2),grid_points=100,var.e=1/100)
-#' exlm(x,y,c("EY"),c(-0.2),c(0.2),grid_points=10001,var.e=1/100)
+#'
+#'#overall F-test for simple linear model under external interval for EY:
+#'
+#'exlm_wald.test(rnorm(100),rnorm(100),c("EY"),c(-0.2),c(0.2),
+#'grid_points=100,var.e=1/100,R=diag(2),r=c(0,0))
+#'
+#'#Simulation:
+#' erg<-c()
+#' for(i in 1:500){erg<-c(erg,exlm_wald.test(rnorm(100),rnorm(100),c("EY"),c(-0.2),c(0.2),
+#' grid_points=100,var.e=1/100,R=diag(2),r=c(0,0))$p.value)}
+#' hist(erg)
 
-exlm<-function(X,y,mom,I_min,I_max=I_min,grid_points=10001,intercept=TRUE,var.e){
+exlm_wald.test<-function(X,y,mom,I_min,I_max=I_min,grid_points=10001,intercept=TRUE,var.e,R,r){
   X<-matrix(X)
   positions<-as.numeric(gsub("\\D","",mom))
   if(intercept==T){positions<-positions+1}
   mom[mom!="EY2"]<-gsub("[[:digit:]]+", "", mom[mom!="EY2"])
   beta_ols_h<-as.vector(lm(y~X)$coefficients)
   if(intercept==TRUE){X<-cbind(1,X)}
-  int_ug<-rep(Inf,ncol(X))
-  int_og<-rep(-Inf,ncol(X))
-  beta_ug<-rep(Inf,ncol(X))
-  beta_og<-rep(-Inf,ncol(X))
-  var_ug<-rep(Inf,ncol(X))
-  var_og<-rep(-Inf,ncol(X))
+  w_ug<-Inf
   g_l<-rep(list(0:(grid_points-1)),sum(I_max!=I_min))
   grid<-expand.grid(g_l)
   for (i_Ki in 1:(grid_points^sum(I_max!=I_min))) {
@@ -45,27 +51,13 @@ exlm<-function(X,y,mom,I_min,I_max=I_min,grid_points=10001,intercept=TRUE,var.e)
     Omega_R<-calc_Omega_R_X(X,y,sigma,mom,beta_gmm_dummy,positions)
     Omega_h<-calc_Omega_h(X,y,E_I,mom,sigma,beta_gmm_dummy,positions,var.e)
     beta_gmm<-calc_beta_gmm(X,y,E_I,mom,Omega_R,Omega_h,positions)
-    var_gmm<-diag(calc_var_gmm(X,y,Omega_R,Omega_h,sigma))
-    new_ug<-beta_gmm-qt(0.975,df=nrow(X)-ncol(X))*sqrt(var_gmm)
-    new_og<-beta_gmm+qt(0.975,df=nrow(X)-ncol(X))*sqrt(var_gmm)
-    if(sum(new_ug<int_ug)>0){
-      int_ug[which(new_ug<int_ug)]<-new_ug[which(new_ug<int_ug)]
-    }
-    if(sum(new_og>int_og)>0){
-      int_og[which(new_og>int_og)]<-new_og[which(new_og>int_og)]
-    }
-    if(sum(beta_gmm<beta_ug)>0){
-      beta_ug[which(beta_gmm<beta_ug)]<-beta_gmm[which(beta_gmm<beta_ug)]
-    }
-    if(sum(var_gmm<var_ug)>0){
-      var_ug[which(var_gmm<var_ug)]<-var_gmm[which(var_gmm<var_ug)]
-    }
-    if(sum(beta_gmm>beta_og)>0){
-      beta_og[which(beta_gmm>beta_og)]<-beta_gmm[which(beta_gmm>beta_og)]
-    }
-    if(sum(var_gmm>var_og)>0){
-      var_og[which(var_gmm>var_og)]<-var_gmm[which(var_gmm>var_og)]
+    var_gmm<-calc_var_gmm(X,y,Omega_R,Omega_h,sigma)
+    w_new<-t(R%*%beta_gmm-r)%*%MASS::ginv(R%*%var_gmm%*%t(R))%*%(R%*%beta_gmm-r)
+    if(w_new<w_ug){
+      w_ug<-w_new
     }
   }
-  return(cbind(beta_ug,beta_og,s_ug=sqrt(var_ug),s_og=sqrt(var_og),int_ug,int_og))
+  pval<-1-pchisq(as.numeric(w_ug),df=nrow(R))
+  return(list(result=paste("The Gamma-maximin Wald test for linear models with",nrow(R),"degrees of freedom has p-value:",pval)
+              ,p.value=pval))
 }

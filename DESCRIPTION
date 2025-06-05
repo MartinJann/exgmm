@@ -1,11 +1,18 @@
 Package: exgmm
-Title: What the Package Does (One Line, Title Case)
+Title: Implement Externally Informed Generalized Method of Moments 
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Martin", "Jann", , "martin.jann@posteo.de", role = c("aut", "cre"))
+Description: Computes estimate and variance intervals, as well as confidence
+    interval unions for models estimated via the externally informed 
+    generalized methods of moments framework. Conducts Gamma-maximin versions
+    of the Sargan-Hansen test for the fit of external information and data
+    as well as Wald, Lagrange-Multiplier, and D_RU tests.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Imports: 
+    MASS (>= 7.3-65),
+    quadprog (>= 1.5-8),
+    stats (>= 4.5.0)
