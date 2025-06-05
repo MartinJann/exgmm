@@ -1,8 +1,8 @@
-#' Confidence Union for a linear model
-#'
+#' externally informed linear model
+#' Computes intervals for estimates and their variances as well as confidence unions
 #' @export
 
-interval_gmm<-function(X,y,mom,I_min,I_max=I_min,grid_points=10001,intercept=TRUE){
+exlm<-function(X,y,mom,I_min,I_max=I_min,grid_points=10001,intercept=TRUE){
   positions<-as.numeric(gsub("\\D","",mom))
   if(intercept==T){positions<-positions+1}
   mom[mom!="EY2"]<-gsub("[[:digit:]]+", "", mom[mom!="EY2"])
