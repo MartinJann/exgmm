@@ -3,8 +3,8 @@ A package to conduct externally informed statistical analysis based on the exter
 
 To install the package run:
 ```
-if(require(devtools)!=TRUE) install.packages("devtools")
-devtools::install_github("MartinJann/exgmm")
+if(require(remotes)!=TRUE) install.packages("remotes")
+remotes::install_github("MartinJann/exgmm")
 ```
 # References 
 
