@@ -14,12 +14,10 @@ Proceedings of the thirteenth international symposium on imprecise probability: 
 and applications (pp. 249–258, Vol. 215). PMLR. https://proceedings.mlr.press/v215/jann23a.html
 
 Jann, M., & Spiess, M. (2024). Using external information for more precise inferences
-in general regression models. Psychometrika, 89 (2), 439–460. https://doi.org/10.1007/
-s11336-024-09953-w
+in general regression models. Psychometrika, 89 (2), 439–460. https://doi.org/10.1007/s11336-024-09953-w
 
 Jann, M. (2024). Testing the fit of data and external sets via an imprecise sargan-
-hansen test. International Journal of Approximate Reasoning, 170, 109214. https :
-//doi.org/https://doi.org/10.1016/j.ijar.2024.109214
+hansen test. International Journal of Approximate Reasoning, 170, 109214. https://doi.org/10.1016/j.ijar.2024.109214
 
 Jann, M., & Spiess, M. (2025). Testing linear hypotheses in repeated measures generalized
 linear models using external information [Manuscript under review].
